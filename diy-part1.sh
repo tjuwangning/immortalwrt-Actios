@@ -24,5 +24,24 @@ echo 'src-git store https://github.com/linkease/istore.git;main' >> feeds.conf.d
 # 调试
 # sed -i 's|src-git-full openstick https://github.com/lkiuyu/openstick-feeds.git|src-git-full openstick https://github.com/xuxin1955/openstick-feeds|g' feeds.conf.default
 
+# 修复 libffi 软件包缺失
+# 当前 packages feed 中的 glib2 依赖 libffi，
+# 而部分 lkiuyu/immortalwrt 主源码版本未包含该软件包。
+
+if [ ! -f package/libs/libffi/Makefile ]; then
+    echo "Adding missing libffi package..."
+
+    mkdir -p package/libs/libffi
+
+    curl -fsSL \
+      https://raw.githubusercontent.com/immortalwrt/immortalwrt/master/package/libs/libffi/Makefile \
+      -o package/libs/libffi/Makefile
+
+    test -s package/libs/libffi/Makefile || {
+        echo "Failed to download libffi Makefile"
+        exit 1
+    }
+fi
+
 
 
